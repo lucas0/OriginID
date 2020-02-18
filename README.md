@@ -71,14 +71,54 @@ Lux proposes the usage of Linguistic Aspects as Features.
 semantic complexity might raise a division by 0 critical error if the texts fed are not big enough. A simple solution to that is increasing the minimum lenght of body texts in data_loader.py.
 
 # Steps to adapt Lux to OriginID:
+1. We will need two .csv files to create the data.csv file used by our model:
 
-1. get the goldstandard annotated files, put into data
+- the dataset.csv file from Crawling/input/, that has the following structure (we will rename it to crawling_dataset.csv:
 
-2. create a new data.csv containing three columns
+    [page,claim,claim_label,tags,claim_source_domain,claim_source_url,date_check,  source_body,date_fake]
 
-    [ url_origin, date_origin, header_origin, body_origin, body_article, link_paragraph, date_article, label ]
+- the datasetVeritas3.csv file from OriginID/data/datasets/datasetVeritas3.csv, that has the following structure:
 
-3. modify generateFeatures.py to account for the new information
+    [page,claim,verdict,tags,date,author,source_list,source_url,value,name]
 
-4. modify the layers on Lux.py
+
+Those two files should be placed in the data/datasets/ folder.
+
+
+2. Then, by using 'generateDataCSV.py' we will create a new data.csv containing three columns in the following manner:
+
+
+[
+       +++ article_body,
+       +++ link_paragraph,
+       *& date_article = date,
+       *& article_tags = tags,
+       *& origin_url = source_url,
+       & origin_body, 
+       +++ origin_header, 
+       & origin_date, 
+       * label = value 
+]
+
+* : obtained from data/datasets/datasetVeritas3.csv
+
+& :  obtained from Crawling/input/dataset.csv
+
++++ : obtained from the .html files and/or crawled
+
+    the article .html file might be useful for obtaining the first two, but the third will have to be crawled.  
+
+3. after generating data.csv from the updated files (datasetVeritas3.csv will be the updated file after the annotations) run the model with 'python3 lux.py'
+
+## TODO:
+
+1. generateDataCSV.py
+
+2. modify generateFeatures.py to account for the new information
+
+3. probably modify data_loader.py to account for the new vector formats?
+
+4. modify the layers on Lux.py accordingly
+
+
 
