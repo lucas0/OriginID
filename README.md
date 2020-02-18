@@ -71,46 +71,42 @@ Lux proposes the usage of Linguistic Aspects as Features.
 semantic complexity might raise a division by 0 critical error if the texts fed are not big enough. A simple solution to that is increasing the minimum lenght of body texts in data_loader.py.
 
 # Steps to adapt Lux to OriginID:
-1. We will need two .csv files to create the data.csv file used by our model:
+Somehow the file veritas3.csv has almost all the info we need. I couldn't figure out how it was generated but it comes from the origins that were annotated with more than 0 "yes".
 
-- the dataset.csv file from Crawling/input/, that has the following structure (we will rename it to crawling_dataset.csv:
+a_url,claim,verdict,a_tags,a_date,a_author,source_list,o_url,value,name,o_domain,o_body,o_title,o_date,o_author,o_keywords,o_summary
 
-    [page,claim,claim_label,tags,claim_source_domain,claim_source_url,date_check,  source_body,date_fake]
+
+1. We will use the datasetVeritas3.csv file to create the data.csv file used by our model, along with the .html files saved on the /data/html_snopes/ folder:
 
 - the datasetVeritas3.csv file from OriginID/data/datasets/datasetVeritas3.csv, that has the following structure:
 
     [page,claim,verdict,tags,date,author,source_list,source_url,value,name]
 
 
-Those two files should be placed in the data/datasets/ folder.
-
-
 2. Then, by using 'generateDataCSV.py' we will create a new data.csv containing three columns in the following manner:
 
 
 [
-       +++ article_body,
-       +++ link_paragraph,
-       *& date_article = date,
-       *& article_tags = tags,
-       *& origin_url = source_url,
-       & origin_body, 
-       +++ origin_header, 
-       & origin_date, 
-       * label = value 
+    +++ article_body,
+    +++ link_paragraph,
+    * date_article = date,
+    * article_tags = tags,
+    * origin_url = source_url,
+    0+++ origin_body, 
+    +++ origin_header, 
+    +++ origin_date, 
+    * label = value 
 ]
 
 * : obtained from data/datasets/datasetVeritas3.csv
 
-& :  obtained from Crawling/input/dataset.csv
-
 +++ : obtained from the .html files and/or crawled
 
-    the article .html file might be useful for obtaining the first two, but the third will have to be crawled.  
+the article .html file might be useful for obtaining the first two, but the third will have to be crawled.  
 
 3. after generating data.csv from the updated files (datasetVeritas3.csv will be the updated file after the annotations) run the model with 'python3 lux.py'
 
-## TODO:
+TODO:
 
 1. generateDataCSV.py
 
@@ -119,6 +115,3 @@ Those two files should be placed in the data/datasets/ folder.
 3. probably modify data_loader.py to account for the new vector formats?
 
 4. modify the layers on Lux.py accordingly
-
-
-
